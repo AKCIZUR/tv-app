@@ -1,4 +1,5 @@
-// --- DOM Refs ---
+const API_BASE = "https://iptv-proxy-kslb.onrender.com";
+
 const video = document.getElementById("video");
 const gridContainer = document.getElementById("gridContainer");
 const gridOverlay = document.getElementById("gridOverlay");
@@ -11,6 +12,9 @@ const volumeWrapper = document.getElementById("volumeWrapper");
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 const channelLogo = document.getElementById("channelLogo");
 const channelName = document.getElementById("channelName");
+const programNow = document.getElementById("programNow");
+const programNext = document.getElementById("programNext");
+const programProgressBar = document.getElementById("programProgressBar");
 
 let activeIndex = 0;
 let hoverIndex = 0;
@@ -18,8 +22,52 @@ let hls = null;
 let idleTimer = null;
 let volumeTimer = null;
 let isPlaying = false;
+let guideData = {};
+let guideTimer = null;
 
-// --- Init Grid ---
+function formatTime(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleTimeString("cs-CZ", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function updateProgramUI(stream) {
+  const data = guideData[stream.name];
+  if (!data || !data.now) {
+    programNow.textContent = "EPG není dostupné";
+    programNext.textContent = "";
+    programProgressBar.style.width = "0%";
+    return;
+  }
+
+  const now = data.now;
+  const next = data.next;
+
+  programNow.textContent = `${now.title || "Bez názvu"} • ${formatTime(now.start)}–${formatTime(now.stop)}`;
+  programNext.textContent = next ? `Další: ${next.title || "Bez názvu"} • ${formatTime(next.start)}–${formatTime(next.stop)}` : "Další: —";
+
+  const start = new Date(now.start).getTime();
+  const stop = new Date(now.stop).getTime();
+  const current = Date.now();
+  const pct = Math.max(0, Math.min(100, ((current - start) / (stop - start)) * 100));
+  programProgressBar.style.width = `${pct}%`;
+}
+
+async function loadGuide() {
+  try {
+    const res = await fetch(`${API_BASE}/guide`, { cache: "no-store" });
+    const data = await res.json();
+    guideData = data.channels || {};
+    updateProgramUI(streams[activeIndex]);
+  } catch {
+    programNow.textContent = "EPG se nenačetlo";
+    programNext.textContent = "";
+    programProgressBar.style.width = "0%";
+  }
+}
+
 streams.forEach((stream, index) => {
   const item = document.createElement("div");
   item.className = "GridItem" + (index === 0 ? " active" : "");
@@ -42,9 +90,11 @@ streams.forEach((stream, index) => {
 
 const gridItems = document.querySelectorAll(".GridItem");
 
-// --- Core Functions ---
 function loadStream(url) {
-  if (hls) { hls.destroy(); hls = null; }
+  if (hls) {
+    hls.destroy();
+    hls = null;
+  }
 
   if (window.Hls && Hls.isSupported()) {
     hls = new Hls({ enableWorker: true, lowLatencyMode: true });
@@ -67,15 +117,14 @@ function selectChannel(index) {
   hoverIndex = index;
   loadStream(streams[index].url);
 
-  // Update channel info
   channelLogo.src = streams[index].logo;
   channelName.textContent = streams[index].name;
+  updateProgramUI(streams[index]);
 
   gridItems.forEach((el, i) => {
     el.classList.toggle("active", i === index);
   });
 
-  // Ensure video plays
   if (video.paused) {
     video.play().catch(() => {});
     isPlaying = true;
@@ -108,7 +157,6 @@ function togglePlay() {
 }
 
 function openGrid() {
-  // Update hover indicator to active channel
   gridItems.forEach(el => {
     el.classList.remove("hovered");
     if (parseInt(el.dataset.index) === activeIndex) {
@@ -133,7 +181,6 @@ function toggleGrid() {
   }
 }
 
-// --- UI State ---
 function setActiveUI() {
   document.body.classList.remove("IdleUI");
 }
@@ -149,7 +196,6 @@ function resetIdleTimer() {
   idleTimer = setTimeout(setIdleUI, 3000);
 }
 
-// --- Volume ---
 video.volume = 1;
 volumeSlider.value = 100;
 
@@ -218,7 +264,6 @@ video.addEventListener("volumechange", () => {
   updateVolumeIcon();
 });
 
-// --- Fullscreen ---
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(() => {});
@@ -229,38 +274,30 @@ function toggleFullscreen() {
 
 fullscreenBtn.addEventListener("click", toggleFullscreen);
 
-// Double-click anywhere (except controls) to toggle fullscreen
 document.addEventListener("dblclick", (e) => {
   if (!e.target.closest(".ControlsContainer") && !e.target.closest(".GridOverlay") && !e.target.closest(".CenterPlayOverlay")) {
     toggleFullscreen();
   }
 });
 
-// --- Events ---
 centerPlayBtn.addEventListener("click", togglePlay);
 gridBtn.addEventListener("click", toggleGrid);
 
-// Click outside grid to close
 gridOverlay.addEventListener("click", (e) => {
   if (e.target === gridOverlay) closeGrid();
 });
 
-// Mouse movement -> Active UI
 window.addEventListener("mousemove", resetIdleTimer, { passive: true });
 window.addEventListener("mousedown", resetIdleTimer, { passive: true });
 window.addEventListener("touchstart", resetIdleTimer, { passive: true });
 
-// Keyboard shortcuts
 window.addEventListener("keydown", (e) => {
   resetIdleTimer();
-
   const isGridOpen = gridOverlay.classList.contains("active");
 
-  // Enter / Space
   if (e.key === "Enter" || e.key === " ") {
     e.preventDefault();
     if (isGridOpen) {
-      // Select hovered channel and close grid
       const targetItem = document.querySelector(`.GridItem[data-index="${hoverIndex}"]`);
       if (targetItem) {
         selectChannel(hoverIndex);
@@ -273,22 +310,15 @@ window.addEventListener("keydown", (e) => {
     }
   }
 
-  // Escape closes grid
-  if (e.key === "Escape" && isGridOpen) {
-    closeGrid();
-  }
+  if (e.key === "Escape" && isGridOpen) closeGrid();
 
-  // Arrow keys
   if (e.key === "ArrowRight") {
     if (isGridOpen) {
-      // Navigate grid
       const next = (hoverIndex + 1) % streams.length;
       hoverIndex = next;
       gridItems.forEach(el => {
         el.classList.remove("hovered");
-        if (parseInt(el.dataset.index) === hoverIndex) {
-          el.classList.add("hovered");
-        }
+        if (parseInt(el.dataset.index) === hoverIndex) el.classList.add("hovered");
       });
     } else {
       selectChannel((activeIndex + 1) % streams.length);
@@ -301,9 +331,7 @@ window.addEventListener("keydown", (e) => {
       hoverIndex = prev;
       gridItems.forEach(el => {
         el.classList.remove("hovered");
-        if (parseInt(el.dataset.index) === hoverIndex) {
-          el.classList.add("hovered");
-        }
+        if (parseInt(el.dataset.index) === hoverIndex) el.classList.add("hovered");
       });
     } else {
       selectChannel((activeIndex - 1 + streams.length) % streams.length);
@@ -312,7 +340,6 @@ window.addEventListener("keydown", (e) => {
 
   if (e.key === "f") toggleFullscreen();
 
-  // Volume
   if (e.key === "ArrowUp") {
     video.volume = Math.min(1, video.volume + 0.05);
     volumeSlider.value = Math.round(video.volume * 100);
@@ -326,6 +353,7 @@ window.addEventListener("keydown", (e) => {
       }
     }, 2000);
   }
+
   if (e.key === "ArrowDown") {
     video.volume = Math.max(0, video.volume - 0.05);
     volumeSlider.value = Math.round(video.volume * 100);
@@ -341,7 +369,6 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-// Mouse wheel volume
 window.addEventListener("wheel", (e) => {
   resetIdleTimer();
   if (Math.abs(e.deltaY) > 0) {
@@ -361,7 +388,13 @@ window.addEventListener("wheel", (e) => {
   }
 }, { passive: true });
 
-// --- Init ---
+async function initGuideLoop() {
+  await loadGuide();
+  clearInterval(guideTimer);
+  guideTimer = setInterval(loadGuide, 60000);
+}
+
 updateVolumeIcon();
 selectChannel(0);
 resetIdleTimer();
+initGuideLoop();
