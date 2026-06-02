@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liquid TV Grid</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  </head>
+
+  <body>
+    <!-- Video Element (no autoplay) -->
+    <video id="video" playsinline></video>
+
+    <!-- Center Play / Pause Button -->
+    <div class="CenterPlayOverlay" id="centerPlayOverlay">
+      <div class="CenterPlayBtn" id="centerPlayBtn">
+        <svg viewBox="0 0 24 24">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Channel Info (Left Center) -->
+    <div class="ChannelInfo" id="channelInfo">
+      <img id="channelLogo" src="" alt="" />
+      <span id="channelName"></span>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="ControlsContainer left" id="leftControls">
+      <!-- Grid / Menu Button -->
+      <div class="CircleControl" id="gridBtn" title="Seznam kanálů">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+      </div>
+    </div>
+
+    <div class="ControlsContainer right" id="rightControls">
+      <!-- Mute / Volume -->
+      <div class="VolumeWrapper" id="volumeWrapper">
+        <div class="CircleControl" id="muteBtn" title="Hlasitost">
+          <svg id="volumeIcon" viewBox="0 0 24 24">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19 5C21 7 22 9.5 22 12C22 14.5 21 17 19 19"></path>
+            <path
+              d="M15.5 8C16.8 9.2 17.5 10.5 17.5 12C17.5 13.5 16.8 14.8 15.5 16"
+            ></path>
+          </svg>
+        </div>
+        <div class="VolumeSliderPopup">
+          <div class="VolumeSliderContainer">
+            <input
+              id="volumeSlider"
+              type="range"
+              min="0"
+              max="100"
+              value="100"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullscreen -->
+      <div class="CircleControl" id="fullscreenBtn" title="Celá obrazovka">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Grid Overlay (Channel List) -->
+    <div class="GridOverlay" id="gridOverlay">
+      <div class="GridContainer" id="gridContainer"></div>
+    </div>
+
+    
+<div id="ambientBg" class="AmbientBg"></div>
+<div id="quickBar" class="QuickBar"></div>
+<div id="volumeOSD" class="VolumeOSD"><span id="volumeText">100%</span><div class="VolumeOSDBar"><div id="volumeFill"></div></div></div>
+
+<div class="BottomDock" id="bottomDock">
+<button>🏠</button><button id="dockChannels">📺</button><button>🔍</button><button>🔊</button><button>⛶</button><button>⚙</button>
+</div>
+
+<script src="streams.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
