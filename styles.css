@@ -1,0 +1,393 @@
+/* --- Reset & Body --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  font-family: "Inter", sans-serif;
+  color: #fff;
+}
+
+video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+  pointer-events: none;
+}
+
+/* --- Center Play / Pause Button --- */
+.CenterPlayOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+.CenterPlayBtn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.CenterPlayBtn:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.CenterPlayBtn svg {
+  width: 36px;
+  height: 36px;
+  fill: #fff;
+}
+
+/* --- Channel Info (Left Center) --- */
+.ChannelInfo {
+  position: fixed;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9997;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+  pointer-events: none;
+}
+
+.ChannelInfo img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.ChannelInfo span {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* --- Bottom Controls --- */
+.ControlsContainer {
+  position: fixed;
+  bottom: 30px;
+  z-index: 9999;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+.ControlsContainer.left {
+  left: 30px;
+}
+
+.ControlsContainer.right {
+  right: 30px;
+}
+
+.CircleControl {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+  color: #fff;
+  pointer-events: auto;
+}
+
+.CircleControl:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: scale(1.05);
+}
+
+.CircleControl svg {
+  width: 22px;
+  height: 22px;
+  stroke: #fff;
+  stroke-width: 2.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- Volume Popup (horizontal slider in vertical container) --- */
+.VolumeWrapper {
+  position: relative;
+  pointer-events: auto;
+}
+
+.VolumeSliderPopup {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  width: 40px;
+  height: 130px;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.VolumeWrapper.open .VolumeSliderPopup {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) scale(1);
+}
+
+.VolumeSliderContainer {
+  transform: rotate(-90deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 34px;
+}
+
+.VolumeSliderContainer input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+}
+
+.VolumeSliderContainer input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+}
+
+.VolumeSliderContainer input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* --- Grid Overlay (Channel List) --- */
+.GridOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.GridOverlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.GridContainer {
+  width: 90%;
+  max-width: 1100px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 18px 16px;
+  padding: 20px 10px;
+  justify-content: center;
+}
+
+.GridItem {
+  width: 80px;
+  height: 80px;
+  margin: auto;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.GridItem img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.GridItem.active {
+  border-color: #fff;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  transform: scale(1.06);
+}
+
+.GridItem.hovered {
+  transform: scale(1.12);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* --- UI Animation States (Idle / Active) --- */
+body.IdleUI .CenterPlayOverlay,
+body.IdleUI .ControlsContainer,
+body.IdleUI .ChannelInfo {
+  opacity: 0 !important;
+  transform: translateY(15px) scale(0.95);
+  pointer-events: none !important;
+}
+
+body.IdleUI .CenterPlayOverlay {
+  transform: scale(0.9);
+}
+
+body.IdleUI .ChannelInfo {
+  transform: translateY(-50%) scale(0.95) !important;
+}
+
+/* --- Mobile adjustments --- */
+@media (max-width: 640px) {
+  .ControlsContainer.left {
+    left: 15px;
+  }
+  .ControlsContainer.right {
+    right: 15px;
+  }
+  .CircleControl {
+    width: 44px;
+    height: 44px;
+  }
+  .CenterPlayBtn {
+    width: 70px;
+    height: 70px;
+  }
+  .ChannelInfo {
+    left: 15px;
+    padding: 8px 12px;
+    gap: 10px;
+  }
+  .ChannelInfo img {
+    width: 32px;
+    height: 32px;
+  }
+  .ChannelInfo span {
+    font-size: 15px;
+  }
+  .GridContainer {
+    padding: 10px;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  }
+  .GridItem {
+    width: 70px;
+    height: 70px;
+  }
+  .VolumeSliderPopup {
+    width: 36px;
+    height: 110px;
+  }
+  .VolumeSliderContainer {
+    width: 100px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 450px) {
+  .GridContainer {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  }
+  .GridItem {
+    width: 60px;
+    height: 60px;
+  }
+  .ControlsContainer {
+    bottom: 15px;
+  }
+}
+
+
+.AmbientBg{position:fixed;inset:-20%;z-index:-1;filter:blur(180px);opacity:.35;
+background:radial-gradient(circle,#3b82f6 0%,transparent 60%);animation:pulse 10s infinite alternate}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.2)}}
+.BottomDock{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;display:flex;gap:10px;padding:12px 16px;background:rgba(255,255,255,.08);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.15);border-radius:24px;z-index:10000}
+.BottomDock button{background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+.VolumeOSD{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);padding:18px;border-radius:18px;background:rgba(0,0,0,.7);backdrop-filter:blur(20px);display:none;z-index:12000;min-width:220px}
+.VolumeOSD.show{display:block}
+.VolumeOSDBar{height:8px;background:#444;border-radius:999px;margin-top:10px}
+#volumeFill{height:100%;width:100%;background:#fff;border-radius:999px}
+.QuickBar{position:fixed;right:30px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.6);backdrop-filter:blur(24px);padding:16px;border-radius:16px;display:none;z-index:12000;min-width:220px}
+.QuickBar.show{display:block}
+.GridItem{transition:all .25s ease!important}
+.GridItem:hover{transform:scale(1.1) translateY(-8px)!important}
