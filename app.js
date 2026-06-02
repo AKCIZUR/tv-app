@@ -365,38 +365,3 @@ window.addEventListener("wheel", (e) => {
 updateVolumeIcon();
 selectChannel(0);
 resetIdleTimer();
-
-
-const quickBar=document.getElementById('quickBar');
-const volumeOSD=document.getElementById('volumeOSD');
-const volumeFill=document.getElementById('volumeFill');
-const volumeText=document.getElementById('volumeText');
-const ambientBg=document.getElementById('ambientBg');
-
-function updateAmbient(){
- const colors=['#2563eb','#8b5cf6','#f97316','#22c55e','#ef4444'];
- ambientBg.style.background=`radial-gradient(circle, ${colors[activeIndex%colors.length]} 0%, transparent 60%)`;
-}
-const oldSelect=selectChannel;
-selectChannel=function(index){ oldSelect(index); updateAmbient(); };
-
-function showQuick(){
- quickBar.classList.add('show');
- quickBar.innerHTML=streams.slice(Math.max(0,activeIndex-1),Math.min(streams.length,activeIndex+3))
- .map(s=>`<div style="padding:6px 0">${s.name}</div>`).join('');
- setTimeout(()=>quickBar.classList.remove('show'),1500);
-}
-document.addEventListener('keydown',e=>{
- if(e.key==='ArrowRight'){showQuick();}
- if(e.key==='ArrowLeft'){showQuick();}
-});
-
-volumeSlider.addEventListener('input',()=>{
- volumeOSD.classList.add('show');
- volumeFill.style.width=volumeSlider.value+'%';
- volumeText.textContent=volumeSlider.value+'%';
- clearTimeout(window.osdTimer);
- window.osdTimer=setTimeout(()=>volumeOSD.classList.remove('show'),1500);
-});
-document.getElementById('dockChannels').onclick=()=>gridOverlay.classList.toggle('show');
-updateAmbient();

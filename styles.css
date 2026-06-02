@@ -376,22 +376,3 @@ body.IdleUI .ChannelInfo {
     bottom: 15px;
   }
 }
-
-
-.AmbientBg{position:fixed;inset:-20%;z-index:-1;filter:blur(180px);opacity:.35;
-background:radial-gradient(circle,#3b82f6 0%,transparent 60%);animation:pulse 10s infinite alternate}
-@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.2)}}
-.BottomDock{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;display:flex;gap:10px;padding:12px 16px;background:rgba(255,255,255,.08);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.15);border-radius:24px;z-index:10000}
-.BottomDock button{background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
-.VolumeOSD{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);padding:18px;border-radius:18px;background:rgba(0,0,0,.7);backdrop-filter:blur(20px);display:none;z-index:12000;min-width:220px}
-.VolumeOSD.show{display:block}
-.VolumeOSDBar{height:8px;background:#444;border-radius:999px;margin-top:10px}
-#volumeFill{height:100%;width:100%;background:#fff;border-radius:999px}
-.QuickBar{position:fixed;right:30px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.6);backdrop-filter:blur(24px);padding:16px;border-radius:16px;display:none;z-index:12000;min-width:220px}
-.QuickBar.show{display:block}
-.GridItem{transition:all .25s ease!important}
-.GridItem:hover{transform:scale(1.1) translateY(-8px)!important}
-
-body.IdleUI .BottomDock{opacity:0;transform:translateX(-50%) translateY(40px);}
-.BottomDock{transition:all .35s ease;}
-.GridOverlay.active,.GridOverlay.show{display:flex!important;}
